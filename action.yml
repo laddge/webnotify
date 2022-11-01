@@ -29,6 +29,10 @@ runs:
       shell: bash
 
     - name: Run script
+      env:
+        URLS: ${{ inputs.urls }}
+        LINE_TOKEN: ${{ inputs.line_token }}
+        TZ: ${{ inputs.timezone }}
       run: |
         python task.py
       shell: bash
