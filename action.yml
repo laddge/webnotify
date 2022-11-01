@@ -1,0 +1,43 @@
+name: webnotify
+description: Action for notifying web updates with LINE Notify
+inputs:
+  urls:
+    description: newline delimited url
+    required: true
+  line_token:
+    description: access token of LINE Notify
+    required: true
+  timezone:
+    description: timezone
+runs:
+  using: composite
+  steps:
+    - name: "Checkout"
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install requests
+      shell: bash
+
+    - name: Run script
+      run: |
+        python task.py
+      shell: bash
+
+    - name: commit & push
+      run: |
+        git add -N .
+        if ! git diff --exit-code --quiet
+        then
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add .
+          git commit -m 'update data'
+          git push
+        fi
+      shell: bash
