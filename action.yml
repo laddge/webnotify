@@ -34,7 +34,7 @@ runs:
         LINE_TOKEN: ${{ inputs.line_token }}
         TZ: ${{ inputs.timezone }}
       run: |
-        python task.py
+        python $GITHUB_ACTION_PATH/task.py
       shell: bash
 
     - name: commit & push
