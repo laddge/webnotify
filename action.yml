@@ -1,5 +1,9 @@
 name: webnotify
 description: Action for notifying web updates with LINE Notify
+author: Laddge
+branding:
+  icon: clock
+  color: green
 inputs:
   urls:
     description: newline delimited url
