@@ -1,2 +1,2 @@
 # webnotify
-Workflow for notifying web updates with LINE Notify
+Action for notifying web updates with LINE Notify
