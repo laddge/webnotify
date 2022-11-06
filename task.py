@@ -22,7 +22,7 @@ def main():
         print(f"[{int(time.time())}] Fetch url[{i}]")
         res0 = requests.get(target.split()[0])
         target_hash = hashlib.md5(target.encode()).hexdigest()
-        if res0.headers.get("Content-Type") == "text/html" and len(target.split()) > 1:
+        if "text/html" in res0.headers.get("Content-Type") and len(target.split()) > 1:
             tree = html.fromstring(res0.text)
             xpath = target.split()[1:]
             content = b""
