@@ -5,8 +5,8 @@ branding:
   icon: clock
   color: green
 inputs:
-  urls:
-    description: newline delimited url
+  targets:
+    description: newline delimited targets
     required: true
   line_token:
     description: access token of LINE Notify
@@ -25,12 +25,12 @@ runs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install requests
+        pip install requests lxml
       shell: bash
 
     - name: Run script
       env:
-        URLS: ${{ inputs.urls }}
+        TARGETS: ${{ inputs.targets }}
         LINE_TOKEN: ${{ inputs.line_token }}
         TZ: ${{ inputs.timezone }}
       run: |

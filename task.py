@@ -4,10 +4,11 @@ import datetime
 import json
 import hashlib
 import requests
+from lxml import html
 
 
 def main():
-    urls = os.getenv("URLS", "")
+    targets = os.getenv("TARGETS", "")
     updated = []
     try:
         with open("data.json") as f:
@@ -15,23 +16,31 @@ def main():
     except Exception:
         data = {}
     ndata = {}
-    for i, url in enumerate(urls.split("\n")):
-        if not url:
+    for i, target in enumerate(targets.split("\n")):
+        if not target:
             continue
         print(f"[{int(time.time())}] Fetch url[{i}]")
-        res0 = requests.get(url)
-        url_hash = hashlib.md5(url.encode()).hexdigest()
-        body_hash = hashlib.md5(res0.content).hexdigest()
-        if data.get(url_hash) != body_hash:
-            updated.append(url)
-        ndata[url_hash] = body_hash
+        res0 = requests.get(target.split()[0])
+        target_hash = hashlib.md5(target.encode()).hexdigest()
+        if res0.headers.get("Content-Type") == "text/html" and len(target.split()) > 1:
+            tree = html.fromstring(res0.text)
+            xpath = target.split()[1:]
+            content = b""
+            for xp in xpath:
+                content += b"".join([html.tostring(el) for el in tree.xpath(xp)])
+        else:
+            content = res0.content
+        content_hash = hashlib.md5(content).hexdigest()
+        if data.get(target_hash) != content_hash:
+            updated.append(target.split()[0])
+        ndata[target_hash] = content_hash
     with open("data.json", "w") as f:
         json.dump(ndata, f)
     if not updated:
         print("Nothing updated.")
         return
     now = datetime.datetime.now().strftime("%b %d, %Y %H:%M:%S\n")
-    line_text = now + "\n".join(updated)
+    line_text = now + "\n".join(list(set(updated)))
     res1 = requests.post(
         "https://notify-api.line.me/api/notify",
         headers={"Authorization": f"Bearer {os.getenv('LINE_TOKEN')}"},
