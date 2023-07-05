@@ -9,7 +9,7 @@ from lxml import html
 
 def serialize(content):
     try:
-        return html.tostring(content)
+        return html.tostring(content).decode()
     except Exception:
         return str(content)
 
@@ -32,12 +32,12 @@ def main():
         if "text/html" in res0.headers.get("Content-Type") and len(target.split()) > 1:
             tree = html.fromstring(res0.text)
             xpath = target.split()[1:]
-            content = b""
+            content = ""
             for xp in xpath:
-                content += b"".join([serialize(el) for el in tree.xpath(xp)])
+                content += "".join([serialize(el) for el in tree.xpath(xp)])
         else:
             content = res0.content
-        content_hash = hashlib.md5(content).hexdigest()
+        content_hash = hashlib.md5(content.encode()).hexdigest()
         if data.get(target_hash) != content_hash:
             updated.append(target.split()[0])
         ndata[target_hash] = content_hash
