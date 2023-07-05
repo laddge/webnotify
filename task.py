@@ -7,6 +7,13 @@ import requests
 from lxml import html
 
 
+def serialize(content):
+    try:
+        return html.tostring(content)
+    except Exception:
+        return str(content)
+
+
 def main():
     targets = os.getenv("TARGETS", "")
     updated = []
@@ -27,7 +34,7 @@ def main():
             xpath = target.split()[1:]
             content = b""
             for xp in xpath:
-                content += b"".join([html.tostring(el) for el in tree.xpath(xp)])
+                content += b"".join([serialize(el) for el in tree.xpath(xp)])
         else:
             content = res0.content
         content_hash = hashlib.md5(content).hexdigest()
